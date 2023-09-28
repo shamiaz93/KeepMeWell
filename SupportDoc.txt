@@ -1,0 +1,7 @@
+--Create debug.keystore
+
+keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000
+
+--Generate SHA
+
+keytool -list -v -keystore "D:\ReactNative\2409\KeepMeWell\android\app\debug.keystore" -alias androiddebugkey -storepass android -keypass android
