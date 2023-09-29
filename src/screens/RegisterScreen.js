@@ -11,8 +11,13 @@ import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { nameValidator } from '../helpers/nameValidator'
+import auth from '@react-native-firebase/auth';
+import { userAction } from '../../store/actions'
+import { useDispatch } from 'react-redux'
 
 export default function RegisterScreen({ navigation }) {
+  const dispatch = useDispatch();
+
   const [name, setName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
@@ -27,10 +32,36 @@ export default function RegisterScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Dashboard' }],
-    })
+
+    auth()
+      .createUserWithEmailAndPassword(email.value, password.value)
+      .then(() => {
+        console.log('User account created & signed in!');
+        auth().onAuthStateChanged(function (user) {
+          if (user) {
+            dispatch(userAction.setLoggedInUser(user))
+              .then(() => {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'LandingScreen' }],
+                });
+              });
+          } else {
+            // No user is signed in.
+          }
+        });
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('That email address is already in use!');
+        }
+
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!');
+        }
+
+        console.error(error);
+      });
   }
 
   return (

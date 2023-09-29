@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "537986916224",
+    "project_id": "keepmewell-dcafe",
+    "storage_bucket": "keepmewell-dcafe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537986916224:android:dac34a509ecd9672f36b65",
+        "android_client_info": {
+          "package_name": "com.keepmewell"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWFOdykukt93uo3kO4Du8VdEzk4K9lrLQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

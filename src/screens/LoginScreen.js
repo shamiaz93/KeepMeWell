@@ -11,10 +11,16 @@ import BackButton from '../components/BackButton'
 import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
+import auth from '@react-native-firebase/auth';
+import { userAction } from '../../store/actions'
+import { useDispatch } from 'react-redux'
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState({ value: 'bits@gmail.com', error: '' })
-  const [password, setPassword] = useState({ value: 'bitspilani', error: '' })
+
+  const dispatch = useDispatch();
+
+  const [email, setEmail] = useState({ value: 'shamiahzia1@gmail.com', error: '' })
+  const [password, setPassword] = useState({ value: '12345678', error: '' })
 
   const onLoginPressed = () => {
     const emailError = emailValidator(email.value)
@@ -24,6 +30,31 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'LandingScreen' }],
+    });
+
+    /* auth()
+      .signInWithEmailAndPassword(email.value, password.value)
+      .then((user) => {
+        if (user) {
+          dispatch(userAction.setLoggedInUser(user))
+            .then(() => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'LandingScreen' }],
+              });
+            });
+        } else {
+          // No user is signed in.
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      }); */
+
     navigation.reset({
       index: 0,
       routes: [{ name: 'LandingScreen' }],

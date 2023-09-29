@@ -1,7 +1,7 @@
-import { APP_LANG } from '../types';
+import { LOGGED_IN_USER } from '../types';
 
 const initialstate = {
-    appLang: 'en',
+    loggedInUser: {},
 };
 
 type Action = {
@@ -11,8 +11,8 @@ type Action = {
 
 export default (state: any = initialstate, action: Action) => {
     switch (action.type) {
-        case APP_LANG:
-            return Object.assign({}, { appLang: action.payload });
+        case LOGGED_IN_USER:
+            return Object.assign({}, { loggedInUser: action.payload });
         default:
             return state;
     }

@@ -2,7 +2,9 @@
     "translation": {
         "hello": "Hello",
         "this line is translated": "This line is translated",
-        "please select language": "Please select language",
-        "hindi": "हिन्दी"
+        "please select preferred language": "Please select preferred language",
+        "hindi": "हिन्दी",
+        "settings": "Settings",
+        "users": "Users"
     }
 }

@@ -1,17 +1,25 @@
+import auth from '@react-native-firebase/auth';
 import React, { useState } from 'react'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
 import Header from '../components/Header'
 import Paragraph from '../components/Paragraph'
-//import Button from '../components/Button'
 import { View } from 'react-native';
-import { Appbar, Button, Card, Divider, RadioButton, Text } from 'react-native-paper';
+import { Appbar, Avatar, Button, Card, Divider, RadioButton, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { StyleSheet } from 'react-native';
 import '../../assets/i18n/i18n';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux'
+import { langAction } from '../../store/actions'
 
 function Profile() {
+
+    const dispatch = useDispatch();
+
+    const { loggedInUser } = useSelector((state) => state.loggedInUser);
+
+    const { appLang } = useSelector((state) => state.appLang);
 
     const { t, i18n } = useTranslation();
 
@@ -19,7 +27,7 @@ function Profile() {
         i18n
             .changeLanguage(value)
             .then(() => {
-                dispatch(langAction.setAppLang({ "currLang": 'hi' }));
+                dispatch(langAction.setAppLang('hi'));
             }).catch(err => console.log(err));
     };
 
@@ -27,20 +35,27 @@ function Profile() {
         i18n
             .changeLanguage(value)
             .then(() => {
-                dispatch(langAction.setAppLang({ "currLang": 'en' }));
+                dispatch(langAction.setAppLang('en'));
             }).catch(err => console.log(err));
     };
+
+    const logOutUser = () => {
+        auth()
+            .signOut()
+            .then(() => console.log('User signed out!'));
+    }
 
     return (
         <>
             <Appbar.Header dark style={{ backgroundColor: 'rgb(120, 69, 172)' }}>
-                <Appbar.Content title="Settings" />
+                <Appbar.Content title={t("settings")} />
+                <Appbar.Action icon={require('../assets/logout.png')} onPress={() => { logOutUser() }} />
             </Appbar.Header>
             <Card style={styles.card}>
                 <Card.Content>
-                    {/* <Text variant="titleLarge">App language</Text> */}
+                    {/* <Avatar.Icon size={24} icon={require('../assets/arrow_back.png')} /> */}
                     <Text variant="bodyMedium">
-                        <Paragraph>{t('please select language')}</Paragraph>
+                        <Paragraph>{t('please select preferred language')}</Paragraph>
                     </Text>
                 </Card.Content>
                 <Card.Actions >
