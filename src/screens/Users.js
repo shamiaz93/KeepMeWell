@@ -1,5 +1,5 @@
 import auth from '@react-native-firebase/auth';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
 import Header from '../components/Header'
@@ -12,6 +12,7 @@ import '../../assets/i18n/i18n';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux'
 import { langAction } from '../../store/actions'
+import firestore from '@react-native-firebase/firestore';
 
 function Users() {
 
@@ -23,9 +24,40 @@ function Users() {
 
     const { t, i18n } = useTranslation();
 
-    const addUserDetails = () => {
+    const [allUsers, setAllUsers] = useState([{ "age": 30, "userName": "Ada Lovelace" }, { "userName": "Ziaul Huda" }, { "age": 30, "userName": "Ada Lovelace" }]);
 
+    const addUserDetails = () => {
+        /* firestore()
+            .collection('secondaryUsers')
+            .add({
+                userName: 'Ada Lovelace',
+                age: 30,
+            })
+            .then(() => {
+                console.log('User added!');
+            }); */
     }
+
+    useEffect(() => {
+        /*  async function fetchAllUsers() {
+             const snapshot = await firestore().collection("secondaryUsers").get();
+             setAllUsers(snapshot.docs.map((doc) => doc.data()));
+         }
+         fetchAllUsers(); */
+
+        /* function onResult(QuerySnapshot) {
+            setAllUsers(QuerySnapshot.docs.map((doc) => doc.data()));
+        }
+
+        function onError(error) {
+            console.error(error);
+        }
+
+        firestore().collection('secondaryUsers').onSnapshot(onResult, onError); */
+
+    }, []);
+
+    console.log("allUsers", allUsers);
 
     return (
         <>

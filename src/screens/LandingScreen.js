@@ -11,7 +11,7 @@ export default function LandingScreen() {
 
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
-        { key: 'dashboard', title: 'Dashboard', focusedIcon: require('../assets/information-management.png'), unfocusedIcon: require('../assets/arrow_back.png') },
+        { key: 'dashboard', title: 'Dashboard', focusedIcon: require('../assets/dashboard.png'), unfocusedIcon: require('../assets/arrow_back.png') },
         { key: 'users', title: 'Users', focusedIcon: 'account-box-multiple', unfocusedIcon: 'account-box-multiple-outline' },
         { key: 'notifications', title: 'Notifications', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },
         { key: 'profile', title: 'Profile', focusedIcon: 'account-circle', unfocusedIcon: 'account-circle-outline' },

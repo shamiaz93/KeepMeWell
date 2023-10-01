@@ -5,3 +5,7 @@ keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddeb
 --Generate SHA
 
 keytool -list -v -keystore "D:\ReactNative\2409\KeepMeWell\android\app\debug.keystore" -alias androiddebugkey -storepass android -keypass android
+
+
+OpenAPI key 
+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
