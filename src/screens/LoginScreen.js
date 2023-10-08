@@ -36,7 +36,7 @@ export default function LoginScreen({ navigation }) {
       routes: [{ name: 'LandingScreen' }],
     });
 
-    /* auth()
+    auth()
       .signInWithEmailAndPassword(email.value, password.value)
       .then((user) => {
         if (user) {
@@ -53,12 +53,12 @@ export default function LoginScreen({ navigation }) {
       })
       .catch(error => {
         console.log(error);
-      }); */
+      });
 
-    navigation.reset({
+    /* navigation.reset({
       index: 0,
       routes: [{ name: 'LandingScreen' }],
-    })
+    }) */
   }
 
   return (

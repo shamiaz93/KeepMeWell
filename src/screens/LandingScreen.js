@@ -11,10 +11,10 @@ export default function LandingScreen() {
 
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
-        { key: 'dashboard', title: 'Dashboard', focusedIcon: require('../assets/dashboard.png'), unfocusedIcon: require('../assets/arrow_back.png') },
-        { key: 'users', title: 'Users', focusedIcon: 'account-box-multiple', unfocusedIcon: 'account-box-multiple-outline' },
-        { key: 'notifications', title: 'Notifications', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },
-        { key: 'profile', title: 'Profile', focusedIcon: 'account-circle', unfocusedIcon: 'account-circle-outline' },
+        { key: 'dashboard', title: 'Dashboard', focusedIcon: require('../assets/dashboard-focused.png'), unfocusedIcon: require('../assets/dashboard.png') },
+        { key: 'users', title: 'Users', focusedIcon: require('../assets/group-focused.png'), unfocusedIcon: require('../assets/group.png') },
+        { key: 'notifications', title: 'Query', focusedIcon: require('../assets/question-focused.png'), unfocusedIcon: require('../assets/question.png') },
+        { key: 'profile', title: 'Profile', focusedIcon: require('../assets/settings-focused.png'), unfocusedIcon: require('../assets/setting.png') },
     ]);
 
     const renderScene = BottomNavigation.SceneMap({

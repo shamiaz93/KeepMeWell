@@ -1,9 +1,8 @@
 import '../../assets/i18n/i18n';
 import Paragraph from '../components/Paragraph'
-import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
 import { Appbar, Card, Text } from 'react-native-paper';
+import { Image, StyleSheet, View } from 'react-native';
 import GoogleFit, { Scopes } from 'react-native-google-fit';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,6 +24,9 @@ const options = {
 
 function Dashboard() {
 
+  const apiKey = '';
+  const apiUrl = 'https://api.openai.com/v1/engines/text-davinci-002/completions';
+
   const dispatch = useDispatch();
   const { appLang } = useSelector((state) => state.appLang);
 
@@ -33,18 +35,6 @@ function Dashboard() {
 
   // start multi language support code
   const { t, i18n } = useTranslation();
-
-  /*const [currentLanguage, setLanguage] = useState('en');
-
-  const changeLanguage = (value) => {
-    i18n
-      .changeLanguage(value)
-      .then(() => {
-        setLanguage(value);
-        dispatch(langAction.setAppLang({ "currLang": 'hi' }));
-      }).catch(err => console.log(err));
-  }; */
-
   // end multi language support code
 
   // start smart watch integration code
@@ -56,7 +46,8 @@ function Dashboard() {
   var [weight, setWeight] = useState(0);
   var [bloodPressure, setBloodPressure] = useState({});
   var [loading, setLoading] = useState(true);
-
+  var [stepsTodayCounter, setStepsTodayCounter] = useState(1);
+  console.log(dailySteps)
   var today = new Date();
   var lastWeekDate = new Date(
     today.getFullYear(),
@@ -72,7 +63,7 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    /* GoogleFit.checkIsAuthorized().then(() => {
+    GoogleFit.checkIsAuthorized().then(() => {
       var authorized = GoogleFit.isAuthorized;
       setIsIdAuthorized(authorized);
       console.log("authorized", authorized);
@@ -96,17 +87,14 @@ function Dashboard() {
             dispatch('AUTH_ERROR');
           });
       }
-    }); */
+    });
 
   }, []);
 
   useEffect(() => {
     if (isIdAuthorized) {
       let fetchStepsData = async opt => {
-        console.log("here");
-        console.log("opt - ", opt);
         const res = await GoogleFit.getDailyStepCountSamples(opt);
-        console.log("res", res);
         if (res.length !== 0) {
           for (var i = 0; i < res.length; i++) {
             if (res[i].source === 'com.google.android.gms:estimated_steps') {
@@ -162,12 +150,37 @@ function Dashboard() {
         setSleep(Math.round((sleepTotal / (1000 * 60 * 60)) * 100) / 100);
       };
 
-      /* fetchSleepData(opt).catch(console.error);
+      fetchSleepData(opt).catch(console.error);
       fetchCaloriesData(opt).catch(console.error);
       fetchStepsData(opt).catch(console.error);
-      fetchWeightData(opt).catch(console.error); */
+      fetchWeightData(opt).catch(console.error);
     }
   }, [isIdAuthorized, refreshHealthData]);
+
+  useEffect(() => {
+    const getApiRes = async () => {
+      const response = await axios.post(apiUrl, {
+        prompt: userQuery,
+        max_tokens: 1024,
+        temperature: 0.5
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        }
+      });
+      const data = (response.data.choices[0].text);
+    }
+  }, [])
+
+  /* useEffect(() => {
+    var interval = setInterval(update, 10);
+
+    function update() {
+      setStepsTodayCounter(stepsTodayCounter + 50);
+      if (stepsTodayCounter <= dailySteps) clearInterval(interval);
+    }
+  }, [stepsTodayCounter]); */
 
   function fetchAllHealthData() {
     setRefreshHealthData(true);
@@ -181,94 +194,23 @@ function Dashboard() {
         <Appbar.Content title="Dashboard" />
         <Appbar.Action icon={require('../assets/refreshing.png')} onPress={() => { fetchAllHealthData() }} />
       </Appbar.Header>
-      <Card style={styles.card}>
-        <Card.Content>
-          <Text variant="titleLarge">Card title</Text>
-          <Text variant="bodyMedium">
-            <Paragraph>{t('this line is translated')}</Paragraph>
+      <Card style={styles.stepsCard}>
+        <Card.Content style={{ alignItems: 'center' }}>
+          <Image
+            source={require('../assets/walk.gif')}
+            style={{
+              width: 100,
+              height: 100
+            }}
+          />
+          <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'black' }}>
+            {dailySteps}
           </Text>
+          <View style={{ marginTop: 20 }}>
+            <Text>Cover {(10000 - dailySteps)} more steps to complete daily goal</Text>
+          </View>
         </Card.Content>
       </Card>
-      <Card style={styles.card}>
-        <Card.Content>
-          <Text variant="titleLarge">Card title</Text>
-          <Text variant="bodyMedium">
-            <Paragraph>{t('this line is translated')}</Paragraph>
-          </Text>
-        </Card.Content>
-        {/* <Card.Actions>
-          <Button onPress={() => changeLanguage('en')}>English</Button>
-          <Button onPress={() => changeLanguage('hi')}>Hindi</Button>
-        </Card.Actions> */}
-      </Card>
-      <View style={[{ flex: 1 }]}>
-        <View style={styles.row}>
-          <View style={[styles.row_2, styles.containerBlue]}>
-            <Text style={styles.textContainerBlue}>Step Count - Today</Text>
-          </View>
-          <View style={[styles.row_2, styles.containerWhite]}>
-            <Text style={styles.textContainerWhite}>{dailySteps}</Text>
-          </View>
-        </View>
-
-        <View style={styles.row}>
-          <View style={[styles.row_2, styles.containerBlue]}>
-            <Text style={styles.textContainerBlue}>Heart Rate</Text>
-          </View>
-          <View style={[styles.row_2, styles.containerWhite]}>
-            <Text style={styles.textContainerWhite}>{heartRate}</Text>
-          </View>
-        </View>
-
-        <View style={styles.row}>
-          <View style={[styles.row_2, styles.containerBlue]}>
-            <Text style={styles.textContainerBlue}>BP- Systolic </Text>
-          </View>
-          <View style={[styles.row_2, styles.containerWhite]}>
-            <Text style={styles.textContainerWhite}>
-              {bloodPressure.systolic}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.row}>
-          <View style={[styles.row_2, styles.containerBlue]}>
-            <Text style={styles.textContainerBlue}>BP - Diastolic </Text>
-          </View>
-          <View style={[styles.row_2, styles.containerWhite]}>
-            <Text style={styles.textContainerWhite}>
-              {bloodPressure.diastolic}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.row}>
-          <View style={[styles.row_2, styles.containerBlue]}>
-            <Text style={styles.textContainerBlue}>Calories</Text>
-          </View>
-          <View style={[styles.row_2, styles.containerWhite]}>
-            <Text style={styles.textContainerWhite}>{calories}</Text>
-          </View>
-        </View>
-
-        <View style={styles.row}>
-          <View style={[styles.row_2, styles.containerBlue]}>
-            <Text style={styles.textContainerBlue}>Sleep - Today</Text>
-          </View>
-          <View style={[styles.row_2, styles.containerWhite]}>
-            <Text style={styles.textContainerWhite}>{sleep} hours</Text>
-          </View>
-        </View>
-
-        <View style={styles.row}>
-          <View style={[styles.row_2, styles.containerBlue]}>
-            <Text style={styles.textContainerBlue}>Weight</Text>
-          </View>
-          <View style={[styles.row_2, styles.containerWhite]}>
-            <Text style={styles.textContainerWhite}>{weight} Kg</Text>
-          </View>
-        </View>
-      </View>
     </>
   )
 }
@@ -278,6 +220,21 @@ export default Dashboard;
 const styles = StyleSheet.create({
   card: {
     margin: 8
+  },
+  stepsCard: {
+    margin: 8,
+    height: 200,
+    backgroundColor: 'white'
+  },
+  stepsText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    justifyContent: 'flex-end'
+  },
+  stepsImg: {
+    width: 80,
+    height: 80,
+    justifyContent: 'flex-start'
   },
   row: {
     flexDirection: 'row',

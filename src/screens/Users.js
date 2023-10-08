@@ -4,8 +4,9 @@ import Background from '../components/Background'
 import Logo from '../components/Logo'
 import Header from '../components/Header'
 import Paragraph from '../components/Paragraph'
+import TextInput from '../components/TextInput'
 import { View } from 'react-native';
-import { Appbar, Avatar, Button, Card, Divider, RadioButton, Text } from 'react-native-paper';
+import { Appbar, Avatar, Button, Card, Divider, RadioButton, Modal, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { StyleSheet } from 'react-native';
 import '../../assets/i18n/i18n';
@@ -24,26 +25,39 @@ function Users() {
 
     const { t, i18n } = useTranslation();
 
-    const [allUsers, setAllUsers] = useState([{ "age": 30, "userName": "Ada Lovelace" }, { "userName": "Ziaul Huda" }, { "age": 30, "userName": "Ada Lovelace" }]);
+    const [allUsers, setAllUsers] = useState([]);
+
+    const [showModal, setShowModal] = useState(false);
+    const [isDataAdded, setIsDataAdded] = useState(false);
+
+    const [userName, setUserName] = useState('');
+    const [userAge, setUserAge] = useState('');
+    const [userNotes, setUserNotes] = useState('');
+
+    const openModal = () => setShowModal(true);
+    const hideModal = () => setShowModal(false);
 
     const addUserDetails = () => {
-        /* firestore()
+        hideModal();
+        firestore()
             .collection('secondaryUsers')
             .add({
-                userName: 'Ada Lovelace',
-                age: 30,
+                userName,
+                userAge,
+                userNotes
             })
             .then(() => {
                 console.log('User added!');
-            }); */
+                setIsDataAdded(true)
+            });
     }
 
     useEffect(() => {
-        /*  async function fetchAllUsers() {
-             const snapshot = await firestore().collection("secondaryUsers").get();
-             setAllUsers(snapshot.docs.map((doc) => doc.data()));
-         }
-         fetchAllUsers(); */
+        async function fetchAllUsers() {
+            const snapshot = await firestore().collection("secondaryUsers").get();
+            setAllUsers(snapshot.docs.map((doc) => doc.data()));
+        }
+        fetchAllUsers();
 
         /* function onResult(QuerySnapshot) {
             setAllUsers(QuerySnapshot.docs.map((doc) => doc.data()));
@@ -55,27 +69,72 @@ function Users() {
 
         firestore().collection('secondaryUsers').onSnapshot(onResult, onError); */
 
-    }, []);
-
-    console.log("allUsers", allUsers);
+    }, [isDataAdded]);
 
     return (
         <>
             <Appbar.Header dark style={{ backgroundColor: 'rgb(120, 69, 172)' }}>
                 <Appbar.Content title={t("users")} />
-                <Appbar.Action icon={require('../assets/add-user.png')} onPress={() => { addUserDetails() }} />
+                <Appbar.Action icon={require('../assets/add-user.png')} onPress={() => { openModal() }} />
             </Appbar.Header>
-            <Card style={styles.card}>
-                <Card.Content>
-                    <Text variant="bodyMedium">
-                        <Paragraph>{t('please select preferred language')}</Paragraph>
-                    </Text>
-                </Card.Content>
-                <Card.Actions >
-                    <Button mode='contained-tonal' onPress={() => changeLanguageToEnglish('en')}>English</Button>
-                    <Button mode='contained-tonal' onPress={() => changeLanguageToHindi('hi')} >{t('hindi')}</Button>
-                </Card.Actions>
-            </Card>
+            {
+                allUsers && allUsers.length > 0 ?
+                    <>
+                        {
+                            allUsers.map((user, index) => {
+                                return (
+                                    <Card style={styles.card} key={index}>
+                                        <Card.Content key={index}>
+                                            <Text variant="bodyMedium" key={index}>
+                                                <Paragraph>Name: {user.userName}{"\n"}</Paragraph>
+                                                <Paragraph>Age: {user.userAge}{"\n"}</Paragraph>
+                                                <Paragraph>Details: {user.userNotes}{"\n"}</Paragraph>
+                                            </Text>
+                                        </Card.Content>
+                                    </Card>
+                                )
+                            })
+                        }
+                    </>
+                    : <Paragraph>No Users are added yet</Paragraph>
+            }
+            <Modal visible={showModal} onDismiss={hideModal} contentContainerStyle={styles.containerStyle}>
+                <Header>Add User</Header>
+                <TextInput
+                    label="Name"
+                    returnKeyType="next"
+                    value={userName}
+                    onChangeText={(text) => setUserName(text)}
+                />
+                <TextInput
+                    label="Age"
+                    returnKeyType="next"
+                    value={userAge}
+                    onChangeText={(text) => setUserAge(text)}
+                />
+                <TextInput
+                    label="Notes"
+                    returnKeyType="done"
+                    value={userNotes}
+                    onChangeText={(text) => setUserNotes(text)}
+                />
+                <View style={styles.row}>
+                    <Button
+                        mode="contained"
+                        onPress={addUserDetails}
+                        style={{ marginTop: 24 }}
+                    >
+                        Add User Details
+                    </Button>
+                    <Button
+                        mode="outlined"
+                        onPress={hideModal}
+                        style={{ marginTop: 24 }}
+                    >
+                        Dismiss Form
+                    </Button>
+                </View>
+            </Modal>
         </>
     )
 }
@@ -88,9 +147,13 @@ const styles = StyleSheet.create({
     },
     row: {
         flexDirection: 'row',
-        marginTop: 2,
+        justifyContent: 'space-around'
     },
     column: {
         flexDirection: 'column',
+    },
+    containerStyle: {
+        backgroundColor: 'white',
+        padding: 20
     }
 })

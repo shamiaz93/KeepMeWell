@@ -55,12 +55,13 @@ function Profile() {
                 <Card.Content>
                     {/* <Avatar.Icon size={24} icon={require('../assets/arrow_back.png')} /> */}
                     <Text variant="bodyMedium">
-                        <Paragraph>{t('please select preferred language')}</Paragraph>
+                        <Paragraph>{t('try KeepMeWell in your language')}</Paragraph>
                     </Text>
                 </Card.Content>
                 <Card.Actions >
                     <Button mode='contained-tonal' onPress={() => changeLanguageToEnglish('en')}>English</Button>
                     <Button mode='contained-tonal' onPress={() => changeLanguageToHindi('hi')} >{t('hindi')}</Button>
+                    <Button mode='contained-tonal' disabled>{t('odiya')}</Button>
                 </Card.Actions>
             </Card>
         </>
