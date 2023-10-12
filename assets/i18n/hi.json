@@ -2,9 +2,11 @@
     "translation": {
         "hello": "नमस्ते",
         "this line is translated": "यह पंक्ति अनुवादित है",
-        "please select preferred language": "कृपया पसंदीदा भाषा चुनें",
+        "try KeepMeWell in your language": "अपनी भाषा में KeepMeWell का प्रयास करें",
         "hindi": "हिन्दी",
         "settings": "समायोजन",
-        "users": "उपयोगकर्ताओं"
+        "users": "उपयोगकर्ताओं",
+        "dashboard": "डैशबोर्ड",
+        "query": "सवाल"
     }
 }

@@ -2,9 +2,11 @@
     "translation": {
         "hello": "Hello",
         "this line is translated": "This line is translated",
-        "please select preferred language": "Please select preferred language",
+        "try KeepMeWell in your language": "Try KeepMeWell in your language",
         "hindi": "हिन्दी",
         "settings": "Settings",
-        "users": "Users"
+        "users": "Users",
+        "dashboard": "Dashboard",
+        "query": "Query"
     }
 }

@@ -2,10 +2,11 @@ import '../../assets/i18n/i18n';
 import Paragraph from '../components/Paragraph'
 import { useTranslation } from 'react-i18next';
 import { Appbar, Card, Text } from 'react-native-paper';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import GoogleFit, { Scopes } from 'react-native-google-fit';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 const options = {
   scopes: [
@@ -24,7 +25,7 @@ const options = {
 
 function Dashboard() {
 
-  const apiKey = '';
+  const apiKey = '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';
   const apiUrl = 'https://api.openai.com/v1/engines/text-davinci-002/completions';
 
   const dispatch = useDispatch();
@@ -47,7 +48,8 @@ function Dashboard() {
   var [bloodPressure, setBloodPressure] = useState({});
   var [loading, setLoading] = useState(true);
   var [stepsTodayCounter, setStepsTodayCounter] = useState(1);
-  console.log(dailySteps)
+  const [suggestions, setSuggestions] = useState();
+
   var today = new Date();
   var lastWeekDate = new Date(
     today.getFullYear(),
@@ -63,11 +65,36 @@ function Dashboard() {
   };
 
   useEffect(() => {
+    const propmtReq = 'Daily fitness advice for me covering just 3000 steps today'
+
+    if (propmtReq !== '') {
+      const getApiRes = async () => {
+        const response = await axios.post(apiUrl, {
+          prompt: propmtReq,
+          max_tokens: 1024,
+          temperature: 0.5
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          }
+        });
+        const data = (response.data.choices[0].text);
+        console.log(response.data.choices[0].text)
+        setSuggestions(data.toString().replace(/(\r\n|\n|\r)/gm, ""));
+      }
+      getApiRes();
+    }
+
+  }, [dailySteps]);
+
+  useEffect(() => {
     GoogleFit.checkIsAuthorized().then(() => {
       var authorized = GoogleFit.isAuthorized;
       setIsIdAuthorized(authorized);
       console.log("authorized", authorized);
       if (authorized) {
+        setIsIdAuthorized(true);
         console.log("inside if");
         // if already authorized, fetch data
 
@@ -100,11 +127,15 @@ function Dashboard() {
             if (res[i].source === 'com.google.android.gms:estimated_steps') {
               let data = res[i].steps.reverse();
               dailyStepCount = res[i].steps;
-              setdailySteps(data[0].value);
+              if (data[0] && data[0].value) {
+                setdailySteps(data[0].value);
+              } else {
+                console.log('Steps Data Not Found');
+              }
             }
           }
         } else {
-          console.log('Not Found');
+          console.log('Steps Data Not Found');
         }
       };
 
@@ -114,6 +145,7 @@ function Dashboard() {
         if (data.length === 0) {
           setCalories('Not Found');
         } else {
+          console.log(data);
           setCalories(Math.round(data[0].calorie * -1 * 100) / 100);
         }
       };
@@ -121,7 +153,9 @@ function Dashboard() {
       let fetchWeightData = async (opt) => {
         const res = await GoogleFit.getWeightSamples(opt);
         let data = res.reverse();
-        setWeight(Math.round(data[0].value * 100) / 100);
+        if (data[0] && data[0].value) {
+          setWeight(Math.round(data[0].value * 100) / 100);
+        }
       };
 
       let fetchSleepData = async opt => {
@@ -191,7 +225,7 @@ function Dashboard() {
   return (
     <>
       <Appbar.Header dark style={{ backgroundColor: 'rgb(120, 69, 172)' }}>
-        <Appbar.Content title="Dashboard" />
+        <Appbar.Content title={t("dashboard")} />
         <Appbar.Action icon={require('../assets/refreshing.png')} onPress={() => { fetchAllHealthData() }} />
       </Appbar.Header>
       <Card style={styles.stepsCard}>
@@ -206,9 +240,72 @@ function Dashboard() {
           <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'black' }}>
             {dailySteps}
           </Text>
-          <View style={{ marginTop: 20 }}>
-            <Text>Cover {(10000 - dailySteps)} more steps to complete daily goal</Text>
-          </View>
+          {/* <View style={{ marginTop: 20 }}>
+            <Text style={{ fontSize: 12 }}>Cover {(10000 - dailySteps)} more steps to complete daily goal</Text>
+            <Text>{suggestions} </Text> 
+          </View> */}
+        </Card.Content>
+      </Card>
+      <View style={{ flexDirection: 'row' }}>
+        <Card style={styles.twinCard}>
+          <Card.Content style={{ alignItems: 'center' }}>
+            <Image
+              source={require('../assets/sleep.gif')}
+              style={{
+                width: 100,
+                height: 100
+              }}
+            />
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={{ alignItems: 'center' }}>You have slept </Text>
+              <Text style={{ fontWeight: 'bold', color: 'black' }}>
+                {sleep}
+              </Text>
+              <Text> hours. </Text>
+            </View>
+          </Card.Content>
+        </Card>
+        <Card style={styles.twinCard}>
+          <Card.Content style={{ alignItems: 'center' }}>
+            <Image
+              source={require('../assets/calories.gif')}
+              style={{
+                width: 100,
+                height: 100
+              }}
+            />
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={{ fontWeight: 'bold', color: 'black' }}>
+                {calories}
+              </Text>
+              <Text> kcal burned so far! </Text>
+            </View>
+          </Card.Content>
+        </Card>
+      </View>
+      <Card style={styles.weightCard}>
+        <Card.Content style={{ alignItems: 'center' }}>
+          <Image
+            source={require('../assets/weight-scale.gif')}
+            style={{
+              width: 100,
+              height: 100
+            }}
+          />
+          <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'black' }}>
+            {weight}
+          </Text>
+          {/* <View style={{ marginTop: 20 }}>
+            <Text style={{ fontSize: 12 }}>Cover {(10000 - dailySteps)} more steps to complete daily goal</Text>
+            <Text>{suggestions} </Text>
+          </View> */}
+        </Card.Content>
+      </Card>
+      <Card style={styles.suggestionsCard}>
+        <Card.Content>
+          <ScrollView>
+            <Text>{suggestions} </Text>
+          </ScrollView>
         </Card.Content>
       </Card>
     </>
@@ -223,7 +320,17 @@ const styles = StyleSheet.create({
   },
   stepsCard: {
     margin: 8,
-    height: 200,
+    height: 160,
+    backgroundColor: 'white'
+  },
+  suggestionsCard: {
+    margin: 8,
+    height: 150,
+    backgroundColor: 'white'
+  },
+  weightCard: {
+    margin: 8,
+    height: 160,
     backgroundColor: 'white'
   },
   stepsText: {
@@ -235,6 +342,12 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     justifyContent: 'flex-start'
+  },
+  twinCard: {
+    margin: 8,
+    height: 150,
+    width: 180,
+    backgroundColor: 'white'
   },
   row: {
     flexDirection: 'row',

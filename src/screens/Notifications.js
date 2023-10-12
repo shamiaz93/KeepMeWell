@@ -10,14 +10,17 @@ import { TouchableHighlight } from 'react-native-gesture-handler'
 import { Image, View, TextInput, StyleSheet, ScrollView } from 'react-native'
 import { theme } from '../core/theme'
 import { useDispatch, useSelector } from 'react-redux'
+import '../../assets/i18n/i18n';
+import { useTranslation } from 'react-i18next';
 
 function Notifications() {
+    const { t, i18n } = useTranslation();
     const { loggedInUser } = useSelector((state) => state.loggedInUser);
     const scrollViewRef = useRef();
     const [userQuery, setUserQuery] = useState('');
     const [messages, setMessages] = useState([{ "msg": "Hey, Cariene here. How may I help you?", "name": "Carine" }]);
 
-    const apiKey = '';
+    const apiKey = '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';
     const apiUrl = 'https://api.openai.com/v1/engines/text-davinci-002/completions';
 
     const fetchOpenApiRes = async () => {
@@ -57,7 +60,6 @@ function Notifications() {
                 const updatedResponses = [...messages, newResponse];
                 setMessages(updatedResponses);
             }
-            console.log('kkkkkkk');
 
             getApiRes();
         }
@@ -68,7 +70,7 @@ function Notifications() {
     return (
         <>
             <Appbar.Header dark style={{ backgroundColor: 'rgb(120, 69, 172)' }}>
-                <Appbar.Content title={"Query"} />
+                <Appbar.Content title={t("query")} />
             </Appbar.Header>
             <View style={styles.parentContainer}>
                 <ScrollView ref={scrollViewRef}
